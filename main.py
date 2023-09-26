@@ -1,30 +1,15 @@
 from flask import Flask, request, jsonify
 from transcribe import transcribe_audio
+from completion_gpt import completion_gpt as gpt
+import openai
 
 app = Flask(__name__)
+openai.api_key = "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"
 
 
 @app.route("/")
 def home():
-    return jsonify({"texto": "Hola flask"})
-
-
-@app.route("/user/<id>")
-def get_user(id):
-    user_data = {"user_id": id, "name": "Arnold", "email": "olanda188@gmai.com"}
-
-    extra = request.args.get("extra")
-    if extra:
-        user_data["extra"] = extra
-
-    return jsonify(user_data), 200
-
-
-# @app.route("/user",methods=["POST"])
-# def create_user():
-#     data = request.get_json()
-
-#     return jsonify(data),201
+    return jsonify({"msg": "Api online"})
 
 
 @app.route("/subir_audio", methods=["POST"])
@@ -44,9 +29,10 @@ def subir_audio():
 
     texto = transcribe_audio("audio.wav")
 
-    return jsonify({"transcripcion": texto}), 200
+    completion = gpt(texto)
+
+    return jsonify({"transcription": texto, "content": completion}), 200
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
+    app.run(debug=True, host="0.0.0.0")
