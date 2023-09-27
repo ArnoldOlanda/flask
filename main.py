@@ -1,10 +1,12 @@
+import openai
 from flask import Flask, request, jsonify
 from transcribe import transcribe_audio
 from completion_gpt import completion_gpt as gpt
-import openai
+from get_products_info import get_products_info
+from generate_json import generate_json
 
 app = Flask(__name__)
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 @app.route("/")
@@ -25,13 +27,21 @@ def subir_audio():
         return "El archivo no tiene nombre", 400
 
     # Guardar el archivo en el sistema de archivos
-    archivo_audio.save("audio.wav")
+    archivo_audio.save("audio.mp3")
 
-    texto = transcribe_audio("audio.wav")
+    # transcripcion del audio a texto
+    texto = transcribe_audio("audio.mp3")
 
-    completion = gpt(texto)
+    # obtencion de los ids de los productos
+    products_ids = gpt(texto)
 
-    return jsonify({"transcription": texto, "content": completion}), 200
+    # Obtencion de la info de los productos
+    products = get_products_info(products_id=products_ids)
+
+    # Generacion del json
+    generated_json = generate_json(products=products)
+
+    return jsonify({"transcription": texto, "content": generated_json}), 200
 
 
 if __name__ == "__main__":

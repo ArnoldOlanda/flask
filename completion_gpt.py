@@ -1,6 +1,7 @@
 import openai
+import json
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 message_history = [
     {
@@ -15,10 +16,11 @@ message_history = [
                         20073->248
                         30011->96
                         30012->97; 
-                    Ahora lo que necesito es que me ayudes a generar un formato JSON a partir del texto que te enviare en los proximos mensajes , 
-                    necesito que entiendas el texto y sepas identificar datos como el nombre del cliente su direccion y el listado de productos que va a pedir, 
-                    de acuerdo al listado de codigo y sus respectivos ids de los productos necesito que armes el listado de los productos a pedir adicionalmente a la cantidad de cada producto y sus respectivo precio, 
-                    toda esa info estara en el texto que te proporcionare lo unico que debes cambiar es el codigo por el respectivo id que le corresponde, retorname solo el JSON generado""",
+                    Genera un JSON a partir del texto que te enviare en los proximos mensajes , 
+                    necesito que entiendas el texto e identifica datos como el nombre del cliente su direccion y el listado de productos, 
+                    adicionalmente a la cantidad de cada producto y sus respectivo precio, 
+                    toda esa info estara en el texto que te proporcionare lo unico que debes cambiar es el codigo por el respectivo id que le corresponde, 
+                    limitate a responderme unicamente con el JSON generado""",
     },
     {
         "role": "assistant",
@@ -42,4 +44,10 @@ def completion_gpt(content=""):
         max_tokens=256,
     )
 
-    return completion.choices[0].message.content
+    json_data = completion.choices[0].message.content
+    print(json_data)
+    data = json.loads(json_data)
+    ids_productos = [producto["id"] for producto in data["productos"]]
+    print(ids_productos)
+
+    return ids_productos
