@@ -7,7 +7,7 @@ from generate_json import generate_json
 from get_customer_id import get_customer_id
 
 app = Flask(__name__)
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 @app.route("/")

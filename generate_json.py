@@ -63,9 +63,6 @@ def generate_json(products=[], cliente_id=""):
         )
 
     dict_data = {
-        "nombre": "Arnold Olanda Muñoz",  # eliminar
-        "direccion": "Alto Paucarpata A-2",  # eliminar
-        "tipo_cliente": "mayorista",  # eliminar
         "id": None,
         "series_id": 10,
         "prefix": "NV",

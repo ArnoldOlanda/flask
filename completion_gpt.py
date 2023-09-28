@@ -1,7 +1,8 @@
 import openai
 import json
+from extract_json import extract_json
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 message_history = [
     {
@@ -18,7 +19,7 @@ message_history = [
                         30012->97; 
                     Genera un JSON a partir del texto que te enviare en los proximos mensajes , 
                     necesito que entiendas el texto e identifica datos como el ruc o el dni del cliente segun sea el caso (para este caso crea una llave denominada  "ruc_dni") 
-                    y el listado de productos, adicionalmente a la cantidad de cada producto y sus respectivo precio, 
+                    y el listado de productos, adicionalmente a la cantidad de cada producto, 
                     toda esa info estara en el texto que te proporcionare lo unico que debes cambiar es el codigo por el respectivo id que le corresponde, 
                     limitate a responderme unicamente con el JSON generado""",
     },
@@ -44,10 +45,10 @@ def completion_gpt(content=""):
         max_tokens=256,
     )
 
-    json_data = completion.choices[0].message.content
-    print(json_data)
+    json_data = extract_json(completion.choices[0].message.content)
+    # print(json_data)
     data = json.loads(json_data)
-    dni_ruc = json_data["ruc_dni"]
+    dni_ruc = data["ruc_dni"]
     ids_productos = [producto["id"] for producto in data["productos"]]
     print(ids_productos)
 

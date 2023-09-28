@@ -1,0 +1,4 @@
+El pedido es el siguiente el ruc del cliente es 20603520034 y los productos a pedir son 
+primero el producto con codigo 10044 por una cantidad de 5 unidades,
+el producto con codigo 20074 por una cantidad de 10 unidades,
+el producto con codigo 20073 por una cantidad de 40 unidades
