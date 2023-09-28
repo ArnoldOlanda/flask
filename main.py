@@ -4,6 +4,7 @@ from transcribe import transcribe_audio
 from completion_gpt import completion_gpt as gpt
 from get_products_info import get_products_info
 from generate_json import generate_json
+from get_customer_id import get_customer_id
 
 app = Flask(__name__)
 openai.api_key = "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"
@@ -33,13 +34,14 @@ def subir_audio():
     texto = transcribe_audio("audio.mp3")
 
     # obtencion de los ids de los productos
-    products_ids = gpt(texto)
+    products_ids, dni_ruc = gpt(texto)
 
+    cliente_id = get_customer_id(dni_ruc)
     # Obtencion de la info de los productos
     products = get_products_info(products_id=products_ids)
 
     # Generacion del json
-    generated_json = generate_json(products=products)
+    generated_json = generate_json(products=products, cliente_id=cliente_id)
 
     return jsonify({"transcription": texto, "content": generated_json}), 200
 

@@ -1,4 +1,10 @@
-def generate_json(products=[]):
+import datetime
+
+fecha_actual = datetime.date.today()
+hora_actual = datetime.datetime.now().time()
+
+
+def generate_json(products=[], cliente_id=""):
     json_products = []
 
     for product in products:
@@ -65,9 +71,9 @@ def generate_json(products=[]):
         "prefix": "NV",
         "establishment_id": 1,
         "due_date": None,
-        "date_of_issue": "2023-09-07",  # new Date
-        "time_of_issue": "13:20:05",  # new time
-        "customer_id": 2192,  # todo: dinamico
+        "date_of_issue": fecha_actual.strftime("%Y-%m-%d"),  # new Date
+        "time_of_issue": hora_actual.strftime("%H:%M:%S"),  # new time
+        "customer_id": cliente_id,  # todo: dinamico
         "currency_type_id": "PEN",
         "purchase_order": None,
         "exchange_rate_sale": 3.708,
