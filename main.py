@@ -5,6 +5,7 @@ from completion_gpt import completion_gpt as gpt
 from get_products_info import get_products_info
 from generate_json import generate_json
 from get_customer_id import get_customer_id
+from database import get_database
 
 app = Flask(__name__)
 openai.api_key = "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"
@@ -48,3 +49,5 @@ def subir_audio():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
+    dbname = get_database()
+    clientes = dbname.clientes
