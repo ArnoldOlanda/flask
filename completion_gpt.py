@@ -2,7 +2,7 @@ import openai
 import json
 from extract_json import extract_json
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 message_history = [
     {

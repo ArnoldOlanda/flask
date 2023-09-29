@@ -8,7 +8,7 @@ from get_customer_id import get_customer_id
 from database import get_database
 
 app = Flask(__name__)
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 @app.route("/")
