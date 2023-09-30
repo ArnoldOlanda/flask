@@ -6,9 +6,15 @@ from get_products_info import get_products_info
 from generate_json import generate_json
 from get_customer_id import get_customer_id
 from database import get_database
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os.environ.get("OPENAI_API_KEY")
+
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 app = Flask(__name__)
-openai.api_key = "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"
 
 
 @app.route("/")

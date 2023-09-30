@@ -1,6 +1,11 @@
 import openai
+from dotenv import load_dotenv
+import os
 
-openai.api_key = "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"
+load_dotenv()
+os.environ.get("OPENAI_API_KEY")
+
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 # Load file
 with open("dataset.jsonl", "rb") as file:

@@ -1,9 +1,14 @@
 import openai
+from dotenv import load_dotenv
+import os
 
-openai.api_key = "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"
+load_dotenv()
+os.environ.get("OPENAI_API_KEY")
 
-file_id = "file-RS8iwRGPqTRZd6bTlgXjbBso"
-model_name = "gpt-3.5-turbo"
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+
+file_id = "file-MNFxwIAFg8uFbt7uMivKVKdE"
+model_name = "ft:gpt-3.5-turbo-0613:personal::846t2axt"
 
 response = openai.FineTuningJob.create(training_file=file_id, model=model_name)
 
