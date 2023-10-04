@@ -10,9 +10,11 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-os.environ.get("OPENAI_API_KEY")
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
+db = get_database()
+productos_collection = db["productos"]
+clientes_collection = db["clientes"]
 
 app = Flask(__name__)
 
@@ -51,6 +53,24 @@ def subir_audio():
     generated_json = generate_json(products=products, cliente_id=cliente_id)
 
     return jsonify({"transcription": texto, "content": generated_json}), 200
+
+
+@app.route("/get_producto/<codigo>")
+def get_producto_id(codigo):
+    producto = productos_collection.find_one({"codigo": codigo})
+    return jsonify(
+        {
+            "uid": str(producto["_id"]),
+            "codigo": producto["codigo"],
+            "id": producto["id"],
+        }
+    )
+
+
+@app.route("/get_clientes")
+def get_clientes():
+    clientes = clientes_collection.find()
+    return jsonify(clientes)
 
 
 if __name__ == "__main__":
