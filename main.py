@@ -1,13 +1,14 @@
+import os
 import openai
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+from database import get_database
 from transcribe import transcribe_audio
 from completion_gpt import completion_gpt as gpt
 from get_products_info import get_products_info
 from generate_json import generate_json
 from get_customer_id import get_customer_id
-from database import get_database
-from dotenv import load_dotenv
-import os
+from get_products_id import get_products_id
 
 load_dotenv()
 
@@ -42,12 +43,17 @@ def subir_audio():
     # transcripcion del audio a texto
     texto = transcribe_audio("audio.mp3")
 
-    # obtencion de los ids de los productos
-    products_ids, dni_ruc = gpt(texto)
+    # creacion del json inicial
+    productos, dni_ruc = gpt(texto)
 
+    # Obtencion del id del cliente
     cliente_id = get_customer_id(dni_ruc)
+
+    # Obtencion de los  ids de los productos
+    products_data = get_products_id(productos=productos)
+
     # Obtencion de la info de los productos
-    products = get_products_info(products_id=products_ids)
+    products = get_products_info(products_data=products_data)
 
     # Generacion del json
     generated_json = generate_json(products=products, cliente_id=cliente_id)
@@ -75,5 +81,6 @@ def get_clientes():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
+
     dbname = get_database()
-    clientes = dbname.clientes
+    # clientes = dbname.clientes

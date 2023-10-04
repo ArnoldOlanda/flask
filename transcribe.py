@@ -8,5 +8,5 @@ def transcribe_audio(file_name="audio.mp3"):
     audio_file = open(file_name, "rb")
     transcript = openai.Audio.transcribe("whisper-1", audio_file)
 
-    # print(transcript)
+    print(transcript.text)
     return transcript.text
