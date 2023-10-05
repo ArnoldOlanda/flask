@@ -68,6 +68,7 @@ def get_producto_id(codigo):
         {
             "uid": str(producto["_id"]),
             "codigo": producto["codigo"],
+            "nombre": producto["nombre"],
             "id": producto["id"],
         }
     )
