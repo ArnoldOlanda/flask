@@ -4,8 +4,9 @@ fecha_actual = datetime.date.today()
 hora_actual = datetime.datetime.now().time()
 
 
-def generate_json(products=[], cliente_id=""):
+def generate_json(products: list = [], cliente_id: str = "") -> dict[str, any]:
     json_products = []
+    subtotal = 0
 
     for product in products:
         product_data = product["data"]["data"]
@@ -15,26 +16,52 @@ def generate_json(products=[], cliente_id=""):
             unit_price = sale_unit_price_rounded + (sale_unit_price_rounded * 0.18)
             presentation = {}
         elif product["tipo_precio"] == "mercado":
-            unit_price = product_data["item_unit_types"][0]["price2"] + (
-                product_data["item_unit_types"][0]["price2"] * 0.18
-            )
+            prices_mercado = product_data["item_unit_types"][0]
+            if float(prices_mercado["price1"]) != 0:
+                unit_price = float(prices_mercado["price1"]) + (
+                    float(prices_mercado["price1"]) * 0.18
+                )
+            elif float(prices_mercado["price2"]) != 0:
+                unit_price = float(prices_mercado["price2"]) + (
+                    float(prices_mercado["price2"]) * 0.18
+                )
+            elif float(prices_mercado["price3"]) != 0:
+                unit_price = float(prices_mercado["price3"]) + (
+                    float(prices_mercado["price3"]) * 0.18
+                )
             presentation = product_data["item_unit_types"][0]
         elif product["tipo_precio"] == "mayorista":
-            unit_price = product_data["item_unit_types"][1]["price3"] + (
-                product_data["item_unit_types"][1]["price3"] * 0.18
+            prices_mayorista = product_data["item_unit_types"][1]
+
+            if float(prices_mayorista["price1"]) != 0:
+                unit_price = float(prices_mayorista["price1"]) + (
+                    float(prices_mayorista["price1"]) * 0.18
+                )
+            elif float(prices_mayorista["price2"]) != 0:
+                unit_price = float(prices_mayorista["price2"]) + (
+                    float(prices_mayorista["price2"]) * 0.18
+                )
+            elif float(prices_mayorista["price3"]) != 0:
+                unit_price = float(prices_mayorista["price3"]) + (
+                    float(prices_mayorista["price3"]) * 0.18
+                )
+
+            unit_price = float(product_data["item_unit_types"][1]["price3"]) + (
+                float(product_data["item_unit_types"][1]["price3"]) * 0.18
             )
             presentation = product_data["item_unit_types"][1]
 
         for item_unit_price in product_data["item_unit_types"]:
             item_unit_price["item_id"] = product["id"]
             item_unit_price["factor_default"] = 0
-            item_unit_price["barcode"] = str(
-                item_unit_price["id"] + item_unit_price["unit_type_id"] + "1"
+            item_unit_price["barcode"] = (
+                str(item_unit_price["id"]) + item_unit_price["unit_type_id"] + "1"
             )
 
-        total_base_igv = product_data["unit_price"] * product["cantidad"]
+        total_base_igv = unit_price * product["cantidad"]
         total_igv = round(total_base_igv * 0.18, 2)
 
+        subtotal += total_base_igv
         json_products.append(
             {
                 "item_id": product["id"],
@@ -235,19 +262,19 @@ def generate_json(products=[], cliente_id=""):
         "total_discount": 0,
         "total_exportation": 0,
         "total_free": 0,
-        "total_taxed": 35.64,  # todo: dinamico
+        "total_taxed": subtotal,  # todo: dinamico
         "total_unaffected": 0,
         "total_exonerated": 0,
-        "total_igv": 6.42,  # todo: dinamico
+        "total_igv": round(subtotal * 0.18, 2),  # todo: dinamico
         "total_base_isc": 0,
         "total_isc": 0,
         "total_base_other_taxes": 0,
         "total_other_taxes": 0,
-        "total_taxes": 6.42,  # todo: dinamico
-        "total_value": 35.64,  # todo: dinamico
-        "subtotal": 42.06,  # todo: dinamico
+        "total_taxes": round(subtotal * 0.18, 2),  # todo: dinamico
+        "total_value": subtotal,  # todo: dinamico
+        "subtotal": round(subtotal + subtotal * 0.18, 2),  # todo: dinamico
         "total_igv_free": 0,
-        "total": 42.06,  # todo: dinamico
+        "total": round(subtotal + subtotal * 0.18, 2),  # todo: dinamico
         "operation_type_id": None,
         "items": json_products,
         "charges": [],
