@@ -13,16 +13,27 @@ def generate_json(products=[], cliente_id=""):
         purchase_unit_price_rounded = round(product_data["purchase_unit_price"], 2)
         if product["tipo_precio"] == "bodega":
             unit_price = sale_unit_price_rounded + (sale_unit_price_rounded * 0.18)
+            presentation = {}
         elif product["tipo_precio"] == "mercado":
             unit_price = product_data["item_unit_types"][0]["price2"] + (
                 product_data["item_unit_types"][0]["price2"] * 0.18
             )
+            presentation = product_data["item_unit_types"][0]
         elif product["tipo_precio"] == "mayorista":
             unit_price = product_data["item_unit_types"][1]["price3"] + (
                 product_data["item_unit_types"][1]["price3"] * 0.18
             )
-        total_base_igv = product_data["sale_unit_price"] * product["cantidad"]
-        total_igv = total_base_igv * 0.18
+            presentation = product_data["item_unit_types"][1]
+
+        for item_unit_price in product_data["item_unit_types"]:
+            item_unit_price["item_id"] = product["id"]
+            item_unit_price["factor_default"] = 0
+            item_unit_price["barcode"] = str(
+                item_unit_price["id"] + item_unit_price["unit_type_id"] + "1"
+            )
+
+        total_base_igv = product_data["unit_price"] * product["cantidad"]
+        total_igv = round(total_base_igv * 0.18, 2)
 
         json_products.append(
             {
@@ -77,7 +88,7 @@ def generate_json(products=[], cliente_id=""):
                     "purchase_has_igv_description": "No",
                     "sale_unit_price": str(sale_unit_price_rounded),
                     "sale_unit_price_with_igv": "S/ "
-                    + str(sale_unit_price_rounded * 0.18),
+                    + str(sale_unit_price_rounded * 0.18 + sale_unit_price_rounded),
                     "purchase_unit_price": str(purchase_unit_price_rounded),
                     "created_at": "2021-01-14 11:44:37",  # todo asignar
                     "updated_at": "2023-09-07 11:59:12",  # todo asignar
@@ -148,24 +159,12 @@ def generate_json(products=[], cliente_id=""):
                     "factory_code": None,
                     "restrict_sale_cpe": False,
                     "name_product_pdf": "",
-                    "unit_price": unit_price,  # TODO aca me estoy quedando
-                    "presentation": {
-                        "id": 1969,
-                        "description": "MERCADO",
-                        "item_id": 209,
-                        "unit_type_id": "NIU",
-                        "quantity_unit": "1.00",
-                        "price1": "0.00",
-                        "price2": "2.97",
-                        "price3": "0.00",
-                        "price_default": 2,
-                        "factor_default": 0,
-                        "barcode": "1969NIU1",
-                    },
+                    "unit_price": (unit_price * 0.18) + unit_price,
+                    "presentation": presentation,  # TODO aca me estoy quedando
                 },
                 "currency_type_id": "PEN",
                 "quantity": product["cantidad"],
-                "unit_value": product_data["sale_unit_price"],  # todo: dinamico
+                "unit_value": unit_price,  # todo: dinamico
                 "affectation_igv_type_id": "10",
                 "affectation_igv_type": {
                     "id": "10",
@@ -187,33 +186,31 @@ def generate_json(products=[], cliente_id=""):
                 "total_plastic_bag_taxes": 0,
                 "total_taxes": total_igv,  # 6.42,  # todo: dinamico
                 "price_type_id": "01",
-                "unit_price": product_data["sale_unit_price"],  # unit_price es
-                "input_unit_price_value": str(product["data"]["sale_unit_price"]),
+                "unit_price": round(
+                    (unit_price * 0.18) + unit_price, 2
+                ),  # unit_price es
+                "input_unit_price_value": str(unit_price),
                 "total_value": total_base_igv,  # 35.64,  # todo: dinamico
                 "total_discount": 0,
                 "total_charge": 0,
-                "total": product_data["sale_unit_price"]  # unit_price es
-                * product["cantidad"],  # todo: dinamico
+                "total": round(
+                    total_base_igv + (total_base_igv * 0.18), 2
+                ),  # unit_price es,  # todo: dinamico
                 "attributes": [],
                 "charges": [],
                 "discounts": [],
                 "warehouse_id": None,
                 "name_product_pdf": "",
                 "record_id": None,
-                "total_value_without_rounding": total_base_igv,  # 35.64,  # todo: dinamico
-                "total_base_igv_without_rounding": total_base_igv,  # 35.64,  # todo: dinamico
-                "total_igv_without_rounding": total_igv,  # 6.4152,  # todo: dinamico
-                "total_taxes_without_rounding": total_igv,  # 6.4152,  # todo: dinamico
-                "total_without_rounding": product_data[
-                    "sale_unit_price"
-                ]  # unit_price es
-                * product["cantidad"],  # todo: dinamico
+                "total_value_without_rounding": total_base_igv,  # 35.64,
+                "total_base_igv_without_rounding": total_base_igv,  # 35.64,
+                "total_igv_without_rounding": total_igv,  # 6.4152,
+                "total_taxes_without_rounding": total_igv,  # 6.4152,
+                "total_without_rounding": total_base_igv + (total_base_igv * 0.18),
                 "purchase_unit_price": str(
-                    product_data["purchase_unit_price"]
-                ),  # ,"2.40",  # todo: dinamico
-                "purchase_unit_value": product_data[
-                    "purchase_unit_price"
-                ],  # 2.3975,  # todo: dinamico
+                    round(product_data["purchase_unit_price"], 2)
+                ),
+                "purchase_unit_value": product_data["purchase_unit_price"],
                 "purchase_has_igv": False,
                 "data_item_lot_group": None,
                 "IdLoteSelected": None,
